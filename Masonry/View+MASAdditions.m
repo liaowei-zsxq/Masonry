@@ -186,7 +186,12 @@
 #pragma mark - heirachy
 
 - (__kindof MAS_VIEW *)mas_closestCommonSuperview:(MAS_VIEW *)view {
-    MAS_VIEW *closestCommonSuperview = self;
+    MAS_VIEW *closestCommonSuperview = [self tryFindClosestCommonSuperview:view];
+    if (closestCommonSuperview) {
+        return closestCommonSuperview;
+    }
+
+    closestCommonSuperview = self;
     MAS_VIEW *secondViewSuperview = view;
     // O(a+b)
     while (closestCommonSuperview != secondViewSuperview) {
@@ -195,6 +200,30 @@
     }
 
     return closestCommonSuperview;
+}
+
+- (MAS_VIEW *)tryFindClosestCommonSuperview:(MAS_VIEW *)secondView {
+    if (!secondView) {
+        return nil;
+    }
+
+    if (self == secondView) {
+        return self;
+    }
+
+    if (self.superview && secondView.superview == self.superview) {
+        return self.superview;
+    } 
+
+    if (self.superview == secondView) {
+        return self.superview;
+    } 
+
+    if (self == secondView.superview) {
+        return secondView.superview;
+    }
+
+    return nil;
 }
 
 @end
